@@ -1,0 +1,9 @@
+name: Trademarker
+version: 1.2
+main: me.jann.trademarker.main
+api-version: 1.17
+commands:
+  trademark:
+    description: Trademark maps
+    aliases:
+      - trm
