@@ -3,14 +3,14 @@ package me.jann.trademarker;
 import org.bukkit.entity.Player;
 import org.bukkit.map.*;
 
-public class Renderer extends MapRenderer {
+public class WatermarkRenderer extends MapRenderer {
 
     private boolean done;
-    private String name;
-    private String posx;
-    private String posy;
+    private final String name;
+    private final String posx;
+    private final String posy;
 
-    public Renderer(String name, String posx, String posy){
+    public WatermarkRenderer(String name, String posx, String posy){
         done = false;
         this.name = name;
         this.posx = posx;

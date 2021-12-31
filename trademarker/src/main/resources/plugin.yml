@@ -7,4 +7,3 @@ commands:
     description: Trademark maps
     aliases:
       - trm
-      - tm
