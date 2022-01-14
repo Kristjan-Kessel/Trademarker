@@ -32,6 +32,7 @@ public class Events implements Listener {
 
         CartographyInventory inv = (CartographyInventory) e.getInventory();
         ItemStack item = inv.getItem(2);
+        if(item == null) return;
         Player p = (Player) e.getWhoClicked();
 
         if (item.getItemMeta().hasLore() && !(item.getItemMeta().getLore().get(0)).contains(p.getName()) && !p.hasPermission("trademarker.bypass")) {
