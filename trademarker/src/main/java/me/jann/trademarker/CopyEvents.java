@@ -13,40 +13,38 @@ import org.bukkit.inventory.meta.BookMeta;
 
 public class CopyEvents implements Listener {
 
-    Trademarker main = Trademarker.getPlugin(Trademarker.class);
-
-    @EventHandler
-    public void craftEvent(CraftItemEvent e) {
-        ItemStack item = e.getInventory().getResult();
-
-        if(item == null || item.getAmount()==0) return;
-
-        if (item.getType().equals(Material.FILLED_MAP)){
-            if (item.getItemMeta().hasLore() && !(item.getItemMeta().getLore().get(0)).contains(e.getWhoClicked().getName()) && !e.getWhoClicked().hasPermission("trademarker.bypass")) {
-                e.setCancelled(true);
-                e.getWhoClicked().sendMessage(main.colorcode(main.getConfig().getString("lang.cant_duplicate")));
-            }
-        }else if(item.getType().equals(Material.WRITTEN_BOOK)){
-            BookMeta meta = (BookMeta) item.getItemMeta();
-            if(meta.hasAuthor() && meta.getAuthor().equals(e.getWhoClicked().getName()) && !e.getWhoClicked().hasPermission("trademarker.bypass") && main.getConfig().getBoolean("protect_books")){
-                e.setCancelled(true);
-                e.getWhoClicked().sendMessage(main.colorcode(main.getConfig().getString("lang.cant_duplicate")));
-            }
-        }
+    private final Trademarker main;
+    public CopyEvents(Trademarker main){
+        this.main = main;
     }
 
     @EventHandler
-    public void copyEvent(InventoryClickEvent e){
-        if(!e.getInventory().getType().equals(InventoryType.CARTOGRAPHY)) return;
+    public void craftEvent(CraftItemEvent event) {
+        ItemStack item = event.getInventory().getResult();
 
-        CartographyInventory inv = (CartographyInventory) e.getInventory();
+        if(item == null || item.getAmount()==0) return;
+
+        if (item.getType() != Material.FILLED_MAP) return;
+
+        if (item.getItemMeta().hasLore() && !(item.getItemMeta().getLore().get(0)).contains(event.getWhoClicked().getName()) && !event.getWhoClicked().hasPermission("trademarker.bypass")) {
+            event.setCancelled(true);
+            event.getWhoClicked().sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_duplicate")));
+        }
+
+    }
+
+    @EventHandler
+    public void copyEvent(InventoryClickEvent event){
+        if(!event.getInventory().getType().equals(InventoryType.CARTOGRAPHY)) return;
+
+        CartographyInventory inv = (CartographyInventory) event.getInventory();
         ItemStack item = inv.getItem(2);
         if(item == null) return;
-        Player p = (Player) e.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
 
-        if (item.getItemMeta().hasLore() && !(item.getItemMeta().getLore().get(0)).contains(p.getName()) && !p.hasPermission("trademarker.bypass")) {
-            e.setCancelled(true);
-            e.getWhoClicked().sendMessage(main.colorcode(main.getConfig().getString("lang.cant_duplicate")));
+        if (item.getItemMeta().hasLore() && !(item.getItemMeta().getLore().get(0)).contains(player.getName()) && !player.hasPermission("trademarker.bypass")) {
+            event.setCancelled(true);
+            event.getWhoClicked().sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_duplicate")));
         }
 
     }

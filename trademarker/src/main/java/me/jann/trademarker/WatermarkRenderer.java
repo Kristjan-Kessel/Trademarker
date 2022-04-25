@@ -21,7 +21,6 @@ public class WatermarkRenderer extends MapRenderer {
     public void render(MapView view, MapCanvas canvas, Player player) {
         if (done) return;
 
-
         int width = MinecraftFont.Font.getWidth(name);
         int height = MinecraftFont.Font.getHeight();
         int x;

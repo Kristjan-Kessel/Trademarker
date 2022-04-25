@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class TrademarkCommand implements CommandExecutor {
 
-    Trademarker main;
+    private final Trademarker main;
     public TrademarkCommand(Trademarker main){
         this.main = main;
     }
@@ -28,62 +28,63 @@ public class TrademarkCommand implements CommandExecutor {
             return true;
         }
 
-        Player p = (Player)sender;
-        if (!p.getInventory().getItemInMainHand().getType().equals(Material.FILLED_MAP)){
-            p.sendMessage(main.colorcode(main.getConfig().getString("lang.not_holding_map")));
+        Player player = (Player)sender;
+        if (!player.getInventory().getItemInMainHand().getType().equals(Material.FILLED_MAP)){
+            player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.not_holding_map")));
             return true;
         }
 
-        if(!p.hasPermission("trademarker.use")){
-            p.sendMessage(main.colorcode(main.getConfig().getString("lang.no_perms")));
+        if(!player.hasPermission("trademarker.use")){
+            player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.no_perms")));
             return true;
         }
 
         if(args.length < 1) return true;
 
-        ItemStack item = p.getInventory().getItemInMainHand();
+        ItemStack item = player.getInventory().getItemInMainHand();
         MapMeta meta = (MapMeta) item.getItemMeta();
         ArrayList<String> lore;
 
         switch(args[0]) {
             case "remove":
-                if (meta.hasLore()) {
-                    if (!(meta.getLore().get(0)).contains(p.getName()) && !p.hasPermission("trademarker.removeother")) {
-                        p.sendMessage(main.colorcode(main.getConfig().getString("lang.cant_remove")));
-                    } else {
-                        lore = new ArrayList();
-                        meta.setLore(lore);
-                        item.setItemMeta(meta);
-                        p.sendMessage(main.colorcode(main.getConfig().getString("lang.trademark_removed")));
-                    }
-                } else {
-                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.remove_no_trademark")));
+                if (!meta.hasLore()){
+                    player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.remove_no_trademark")));
+                    break;
                 }
+
+                if ( !(meta.getLore().get(0)).contains(player.getName()) && !player.hasPermission("trademarker.removeother") ) {
+                    player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_remove")));
+                    break;
+                }
+
+                lore = new ArrayList<>();
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+                player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.trademark_removed")));
                 break;
             case "add":
                 if (!meta.hasLore()) {
-                    lore = new ArrayList();
-                    String trademark = main.getConfig().getString("lang.trademark_format");
-                    trademark = trademark.replace("%player%",p.getName());
-                    trademark = main.colorcode(trademark);
-                    lore.add(trademark);
-                    meta.setLore(lore);
-                    item.setItemMeta(meta);
-                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.trademark_added")));
-                } else {
-                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.cant_trademark")));
+                    player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_trademark")));
+                    break;
                 }
+
+                lore = new ArrayList<>();
+                String trademark = main.getConfig().getString("lang.trademark_format");
+                trademark = trademark.replace("%player%",player.getName());
+                trademark = Trademarker.colorCode(trademark);
+                lore.add(trademark);
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+                player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.trademark_added")));
                 break;
             case "watermark":
-                if(!p.hasPermission("trademarker.watermark")){
-                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.no_perms")));
+                if(!player.hasPermission("trademarker.watermark")){
+                    player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.no_perms")));
                     return true;
                 }
 
-
-
-                if(!(meta.getLore().get(0).contains(p.getName())) && !p.hasPermission("trademarker.watermarkother")){
-                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.watermark_others_trademarked")));
+                if(!(meta.getLore().get(0).contains(player.getName())) && !player.hasPermission("trademarker.watermarkother")){
+                    player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.watermark_others_trademarked")));
                     break;
                 }
 
@@ -98,14 +99,11 @@ public class TrademarkCommand implements CommandExecutor {
                     }
                 }
 
-                view.addRenderer(new WatermarkRenderer(p.getName(),posx,posy));
+                view.addRenderer(new WatermarkRenderer(player.getName(),posx,posy));
 
-                p.sendMessage(main.colorcode(main.getConfig().getString("lang.watermark_added")));
+                player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.watermark_added")));
 
                 break;
-            case "reload":
-                main.reloadConfig();
-                sender.sendMessage("");
         }
 
         return true;

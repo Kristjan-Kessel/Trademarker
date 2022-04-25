@@ -6,16 +6,14 @@ import me.jann.trademarker.commands.TrademarkTab;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class Trademarker extends JavaPlugin implements Listener {
 
-    public String colorcode(String message) {
-        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+    private static final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+    public static String colorCode(String message) {
         Matcher matcher = pattern.matcher(message);
         while (matcher.find()) {
             String hexCode = message.substring(matcher.start(), matcher.end());
@@ -52,7 +50,7 @@ public final class Trademarker extends JavaPlugin implements Listener {
 
         reloadConfig();
 
-        this.getServer().getPluginManager().registerEvents(new CopyEvents(), this);
+        this.getServer().getPluginManager().registerEvents(new CopyEvents(this), this);
         getCommand("trademark").setExecutor(new TrademarkCommand(this));
         getCommand("trademark").setTabCompleter(new TrademarkTab());
         getCommand("trademarkreload").setExecutor(new ReloadCommand(this));
