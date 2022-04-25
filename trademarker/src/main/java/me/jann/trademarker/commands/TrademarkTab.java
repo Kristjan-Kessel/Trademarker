@@ -1,4 +1,4 @@
-package me.jann.trademarker;
+package me.jann.trademarker.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

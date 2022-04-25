@@ -1,0 +1,12 @@
+lang:
+  cant_remove: "&cYou can't remove this trademark."
+  trademark_removed: "&aTrademark removed."
+  trademark_added: "&aTrademark added"
+  not_holding_map: "&cYou need to be holding a map to use this command."
+  cant_duplicate: "&cYou can't duplicate this"
+  cant_trademark: "This map has already been trademarked."
+  remove_no_trademark: "&cThis map hasn't been trademarked."
+  watermark_others_trademark: "&cYou can only watermark your own trademarked maps!"
+  watermark_added: "&aWatermark added."
+  no_perms: "&cYou don't have permission to use this command."
+  trademark_format: "&cBy %player%"

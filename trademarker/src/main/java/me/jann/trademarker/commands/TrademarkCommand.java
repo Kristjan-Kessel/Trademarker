@@ -1,5 +1,7 @@
-package me.jann.trademarker;
+package me.jann.trademarker.commands;
 
+import me.jann.trademarker.Trademarker;
+import me.jann.trademarker.WatermarkRenderer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -14,8 +16,8 @@ import java.util.ArrayList;
 
 public class TrademarkCommand implements CommandExecutor {
 
-    main main;
-    public TrademarkCommand(main main){
+    Trademarker main;
+    public TrademarkCommand(Trademarker main){
         this.main = main;
     }
 
@@ -28,12 +30,12 @@ public class TrademarkCommand implements CommandExecutor {
 
         Player p = (Player)sender;
         if (!p.getInventory().getItemInMainHand().getType().equals(Material.FILLED_MAP)){
-            p.sendMessage(ChatColor.RED + "You need to be holding a map to use this command");
+            p.sendMessage(main.colorcode(main.getConfig().getString("lang.not_holding_map")));
             return true;
         }
 
         if(!p.hasPermission("trademarker.use")){
-            p.sendMessage(ChatColor.RED+"You don't have permission to use this command");
+            p.sendMessage(main.colorcode(main.getConfig().getString("lang.no_perms")));
             return true;
         }
 
@@ -47,35 +49,41 @@ public class TrademarkCommand implements CommandExecutor {
             case "remove":
                 if (meta.hasLore()) {
                     if (!(meta.getLore().get(0)).contains(p.getName()) && !p.hasPermission("trademarker.removeother")) {
-                        p.sendMessage(ChatColor.RED + "You can't remove this trademark.");
+                        p.sendMessage(main.colorcode(main.getConfig().getString("lang.cant_remove")));
                     } else {
                         lore = new ArrayList();
                         meta.setLore(lore);
                         item.setItemMeta(meta);
-                        p.sendMessage(ChatColor.GREEN + "Trademark was removed.");
+                        p.sendMessage(main.colorcode(main.getConfig().getString("lang.trademark_removed")));
                     }
                 } else {
-                    p.sendMessage(ChatColor.RED + "This map hasn't been trademarked.");
+                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.remove_no_trademark")));
                 }
                 break;
             case "add":
                 if (!meta.hasLore()) {
                     lore = new ArrayList();
-                    lore.add(ChatColor.RED + "By " + p.getName());
+                    String trademark = main.getConfig().getString("lang.trademark_format");
+                    trademark = trademark.replace("%player%",p.getName());
+                    trademark = main.colorcode(trademark);
+                    lore.add(trademark);
                     meta.setLore(lore);
                     item.setItemMeta(meta);
+                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.trademark_added")));
                 } else {
-                    p.sendMessage(ChatColor.RED + "This map has already been trademarked.");
+                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.cant_trademark")));
                 }
                 break;
             case "watermark":
                 if(!p.hasPermission("trademarker.watermark")){
-                    p.sendMessage(ChatColor.RED+"You don't have permission to use this command.");
+                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.no_perms")));
                     return true;
                 }
 
-                if(!(meta.hasLore() && meta.getLore().get(0).contains(p.getName())) && !p.hasPermission("trademarker.watermarkother")){
-                    p.sendMessage(ChatColor.RED+"You can only watermark your own trademarked maps!");
+
+
+                if(!(meta.getLore().get(0).contains(p.getName())) && !p.hasPermission("trademarker.watermarkother")){
+                    p.sendMessage(main.colorcode(main.getConfig().getString("lang.watermark_others_trademarked")));
                     break;
                 }
 
@@ -92,9 +100,12 @@ public class TrademarkCommand implements CommandExecutor {
 
                 view.addRenderer(new WatermarkRenderer(p.getName(),posx,posy));
 
+                p.sendMessage(main.colorcode(main.getConfig().getString("lang.watermark_added")));
+
                 break;
-            default:
-                p.sendMessage(ChatColor.RED + "Use a valid sub-command: add, remove");
+            case "reload":
+                main.reloadConfig();
+                sender.sendMessage("");
         }
 
         return true;
