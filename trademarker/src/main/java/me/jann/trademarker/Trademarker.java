@@ -42,12 +42,11 @@ public final class Trademarker extends JavaPlugin implements Listener {
         getConfig().addDefault("lang.remove_no_trademark","&cThis map hasn't been trademarked.");
         getConfig().addDefault("lang.watermark_others_trademark","&cYou can only watermark your own trademarked maps!");
         getConfig().addDefault("lang.watermark_added","&aWatermark added.");
+        getConfig().addDefault("lang.watermark_no_tradermark","&cThis map hasn't been trademarked.");
         getConfig().addDefault("lang.no_perms","&cYou don't have permission to use this command.");
         getConfig().addDefault("lang.trademark_format","&cBy %player%");
         getConfig().options().copyDefaults(true);
         saveConfig();
-
-
         reloadConfig();
 
         this.getServer().getPluginManager().registerEvents(new CopyEvents(this), this);

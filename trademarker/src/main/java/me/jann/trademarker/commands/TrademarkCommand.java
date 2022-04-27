@@ -83,7 +83,12 @@ public class TrademarkCommand implements CommandExecutor {
                     return true;
                 }
 
-                if(!(meta.getLore().get(0).contains(player.getName())) && !player.hasPermission("trademarker.watermarkother")){
+                if(!meta.hasLore()) {
+                    player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.watermark_no_trademark")));
+                    return true;
+                }
+
+                if( !(meta.getLore().get(0).contains(player.getName()) ) && !player.hasPermission("trademarker.watermarkother")){
                     player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.watermark_others_trademarked")));
                     break;
                 }
