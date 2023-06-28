@@ -25,7 +25,7 @@ public class ReloadCommand implements CommandExecutor {
         sender.sendMessage(ChatColor.GREEN+"Config reloaded!");
 
         if(!main.getConfig().getString("lang.trademark_format").contains("%player%")){
-            sender.sendMessage(ChatColor.RED+"Trademark format doesn't have a %player% placeholder! add it back or new trademarks won't work.");
+            sender.sendMessage(ChatColor.RED+"Trademark format doesn't have a %player% placeholder!");
         }
 
         return true;

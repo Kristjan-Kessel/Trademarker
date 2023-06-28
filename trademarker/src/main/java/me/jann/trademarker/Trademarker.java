@@ -4,14 +4,23 @@ import me.jann.trademarker.commands.ReloadCommand;
 import me.jann.trademarker.commands.TrademarkCommand;
 import me.jann.trademarker.commands.TrademarkTab;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class Trademarker extends JavaPlugin implements Listener {
 
+    public static final NamespacedKey TRADEMARK_OWNER_KEY = new NamespacedKey("tradermarker","owner");
     private static final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
     public static String colorCode(String message) {
         Matcher matcher = pattern.matcher(message);
@@ -31,6 +40,33 @@ public final class Trademarker extends JavaPlugin implements Listener {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
+    public static boolean isMapOwner(Player player, ItemStack map){
+        Player owner = getOwnerOfMap(map);
+        return player.getUniqueId() == owner.getUniqueId();
+    }
+
+    public static boolean canCopyMap(Player player, ItemStack map){
+        if (isMapOwner(player, map)) return true;
+        if (player.hasPermission("trademarker.bypass")) return true;
+        return false;
+    }
+
+    public static Player getOwnerOfMap(ItemStack map){
+        ItemMeta meta = map.getItemMeta();
+        String ownerUUID = meta.getPersistentDataContainer().get(TRADEMARK_OWNER_KEY, PersistentDataType.STRING);
+        return Bukkit.getPlayer(UUID.fromString(ownerUUID));
+    }
+
+    public static boolean isTrademarkedMap(ItemStack map){
+        if(map == null || map.getAmount()==0) return false;
+        if (map.getType() != Material.FILLED_MAP) return false;
+        if (!map.hasItemMeta()) return false;
+
+        ItemMeta meta = map.getItemMeta();
+
+        return meta.getPersistentDataContainer().has(TRADEMARK_OWNER_KEY, PersistentDataType.STRING);
+    }
+
     public void onEnable() {
 
         getConfig().addDefault("lang.cant_remove","&cYou can't remove this trademark.");
@@ -42,7 +78,7 @@ public final class Trademarker extends JavaPlugin implements Listener {
         getConfig().addDefault("lang.remove_no_trademark","&cThis map hasn't been trademarked.");
         getConfig().addDefault("lang.watermark_others_trademark","&cYou can only watermark your own trademarked maps!");
         getConfig().addDefault("lang.watermark_added","&aWatermark added.");
-        getConfig().addDefault("lang.watermark_no_tradermark","&cThis map hasn't been trademarked.");
+        getConfig().addDefault("lang.watermark_no_trademark","&cThis map hasn't been trademarked.");
         getConfig().addDefault("lang.no_perms","&cYou don't have permission to use this command.");
         getConfig().addDefault("lang.trademark_format","&cBy %player%");
         getConfig().options().copyDefaults(true);

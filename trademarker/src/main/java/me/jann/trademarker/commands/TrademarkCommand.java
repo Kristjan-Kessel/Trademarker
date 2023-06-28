@@ -11,8 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
+
+import static me.jann.trademarker.Trademarker.*;
 
 public class TrademarkCommand implements CommandExecutor {
 
@@ -47,34 +50,50 @@ public class TrademarkCommand implements CommandExecutor {
 
         switch(args[0]) {
             case "remove":
-                if (!meta.hasLore()){
+                if (!isTrademarkedMap(item)){
                     player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.remove_no_trademark")));
                     break;
                 }
 
-                if ( !(meta.getLore().get(0)).contains(player.getName()) && !player.hasPermission("trademarker.removeother") ) {
+                if (!isMapOwner(player,item) && !player.hasPermission("trademarker.remove.other")){
                     player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_remove")));
                     break;
                 }
 
+                //lore
                 lore = new ArrayList<>();
                 meta.setLore(lore);
+
+                //metadata
+                meta.getPersistentDataContainer().remove(TRADEMARK_OWNER_KEY);
+
                 item.setItemMeta(meta);
+
+
                 player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.trademark_removed")));
                 break;
             case "add":
-                if (!meta.hasLore()) {
+
+                if (isTrademarkedMap(item)) {
                     player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_trademark")));
                     break;
                 }
 
+                //lore
                 lore = new ArrayList<>();
                 String trademark = main.getConfig().getString("lang.trademark_format");
                 trademark = trademark.replace("%player%",player.getName());
                 trademark = Trademarker.colorCode(trademark);
                 lore.add(trademark);
                 meta.setLore(lore);
+
+
+                //metadata
+                String uuid = player.getUniqueId().toString();
+                meta.getPersistentDataContainer().set(TRADEMARK_OWNER_KEY, PersistentDataType.STRING, uuid);
+
                 item.setItemMeta(meta);
+
                 player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.trademark_added")));
                 break;
             case "watermark":
@@ -83,12 +102,12 @@ public class TrademarkCommand implements CommandExecutor {
                     return true;
                 }
 
-                if(!meta.hasLore()) {
+                if(!isTrademarkedMap(item)) {
                     player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.watermark_no_trademark")));
                     return true;
                 }
 
-                if( !(meta.getLore().get(0).contains(player.getName()) ) && !player.hasPermission("trademarker.watermarkother")){
+                if(!isMapOwner(player,item) && !player.hasPermission("trademarker.watermark.others")){
                     player.sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.watermark_others_trademarked")));
                     break;
                 }

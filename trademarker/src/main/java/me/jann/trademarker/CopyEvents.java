@@ -1,6 +1,5 @@
 package me.jann.trademarker;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,6 +8,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.CartographyInventory;
 import org.bukkit.inventory.ItemStack;
+
+import static me.jann.trademarker.Trademarker.canCopyMap;
+import static me.jann.trademarker.Trademarker.isTrademarkedMap;
 
 public class CopyEvents implements Listener {
 
@@ -21,11 +23,9 @@ public class CopyEvents implements Listener {
     public void craftEvent(CraftItemEvent event) {
         ItemStack item = event.getInventory().getResult();
 
-        if(item == null || item.getAmount()==0) return;
+        if(!isTrademarkedMap(item)) return;
 
-        if (item.getType() != Material.FILLED_MAP) return;
-
-        if (item.getItemMeta().hasLore() && !(item.getItemMeta().getLore().get(0)).contains(event.getWhoClicked().getName()) && !event.getWhoClicked().hasPermission("trademarker.bypass")) {
+        if (!canCopyMap( (Player) event.getWhoClicked(), item)) {
             event.setCancelled(true);
             event.getWhoClicked().sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_duplicate")));
         }
@@ -38,10 +38,10 @@ public class CopyEvents implements Listener {
 
         CartographyInventory inv = (CartographyInventory) event.getInventory();
         ItemStack item = inv.getItem(2);
-        if(item == null) return;
-        Player player = (Player) event.getWhoClicked();
 
-        if (item.getItemMeta().hasLore() && !(item.getItemMeta().getLore().get(0)).contains(player.getName()) && !player.hasPermission("trademarker.bypass")) {
+        if(!isTrademarkedMap(item)) return;
+
+        if (!canCopyMap( (Player) event.getWhoClicked(), item)) {
             event.setCancelled(true);
             event.getWhoClicked().sendMessage(Trademarker.colorCode(main.getConfig().getString("lang.cant_duplicate")));
         }

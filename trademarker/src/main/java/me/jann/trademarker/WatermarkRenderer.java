@@ -1,7 +1,10 @@
 package me.jann.trademarker;
 
 import org.bukkit.entity.Player;
-import org.bukkit.map.*;
+import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
+import org.bukkit.map.MinecraftFont;
 
 public class WatermarkRenderer extends MapRenderer {
 
